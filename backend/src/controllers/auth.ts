@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import { createSigner } from 'fast-jwt'
 import 'dotenv/config'
 
-import { createUserOnDB } from 'repositories/user'
+import { createUserOnDB, deleteUserByUsernameOnDB } from 'repositories/user'
 
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { RegisterUser, LoginUser } from 'types/auth'
@@ -43,4 +43,19 @@ export const loginController = async (
 			maxAge: 2592000000, //30 days
 		})
 		.send({ message: 'User Logged In Successfully' })
+}
+
+export const deleteAccountController = async (
+	req: FastifyRequest,
+	reply: FastifyReply
+) => {
+	try {
+		const { username } = req.params as { username: string }
+
+		await deleteUserByUsernameOnDB(username)
+
+		reply.send({ message: 'User Deleted Successfully' })
+	} catch (err) {
+		reply.code(500).send({ error: 'Internal Server Error' })
+	}
 }

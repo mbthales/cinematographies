@@ -32,8 +32,22 @@ export const checkIfUserExists = async (
 	next: () => void
 ) => {
 	try {
+		const param = req.params as { username: string }
 		const body = req.body as RegisterUser
-		const userExists = await findUserByUsernameOnDB(body.username)
+		const username = param.username || body.username
+		const userExists = await findUserByUsernameOnDB(username)
+
+		if (param.username) {
+			if (!userExists) {
+				reply.code(404).send({
+					message: 'User Does Not Exist',
+				})
+
+				return
+			}
+
+			return
+		}
 
 		if (userExists) {
 			reply.code(400).send({

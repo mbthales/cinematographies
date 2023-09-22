@@ -9,3 +9,7 @@ export const createUserOnDB = async (data: RegisterUser) => {
 export const findUserByUsernameOnDB = async (username: string) => {
 	return await prisma.user.findUnique({ where: { username } })
 }
+
+export const deleteUserByUsernameOnDB = async (username: string) => {
+	return await prisma.user.delete({ where: { username } })
+}
