@@ -1,8 +1,12 @@
-import { createPhotoOnDB, getAllPhotosFromDB } from 'repositories/photo'
+import {
+	createPhotoOnDB,
+	getAllPhotosOnDB,
+	getUserPhotosOnDB,
+} from 'repositories/photo'
 import { findUserByUsernameOnDB } from 'repositories/user'
+import pagination from 'helpers/pagination'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { ReqQueryGetPhotos } from 'types/photo'
 
 export const createPostWithPhoto = async (
 	req: FastifyRequest,
@@ -33,14 +37,35 @@ export const fetchAllPhotos = async (
 	req: FastifyRequest,
 	reply: FastifyReply
 ) => {
-	const query = req.query as ReqQueryGetPhotos
-	const page = query.page ? parseInt(query.page, 10) : 1
-	const limit = query.limit ? parseInt(query.limit, 10) : 10
-	const offset = (page - 1) * limit
+	try {
+		const { offset, limit } = pagination(req)
 
-	const photos = await getAllPhotosFromDB(offset, limit)
+		const photos = await getAllPhotosOnDB(offset, limit)
 
-	reply.code(200).send({
-		photos,
-	})
+		reply.code(200).send({
+			photos,
+		})
+	} catch (err) {
+		reply.code(500).send({ error: 'Internal Server Error' })
+	}
+}
+
+export const fetchUserPhotos = async (
+	req: FastifyRequest,
+	reply: FastifyReply
+) => {
+	try {
+		const { offset, limit } = pagination(req)
+		const { username } = req.params as { username: string }
+
+		const user = await findUserByUsernameOnDB(username)
+		const userId = user?.id as string
+		const photos = await getUserPhotosOnDB(userId, offset, limit)
+
+		reply.code(200).send({
+			photos,
+		})
+	} catch (err) {
+		reply.code(500).send({ error: 'Internal Server Error' })
+	}
 }

@@ -3,7 +3,7 @@ import cookie from '@fastify/cookie'
 import multipart from '@fastify/multipart'
 
 import { registerRoute, loginRoute, deleteAccountRoute } from 'routes/auth'
-import { addPhotoRoute, getAllPhotos } from 'routes/photo'
+import { addPhotoRoute, getAllPhotos, getUserPhotos } from 'routes/photo'
 
 const app = Fastify()
 
@@ -15,6 +15,7 @@ loginRoute(app)
 deleteAccountRoute(app)
 addPhotoRoute(app)
 getAllPhotos(app)
+getUserPhotos(app)
 
 app.listen({ port: 3000 }, (err, address) => {
 	if (err) {

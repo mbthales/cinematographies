@@ -8,8 +8,25 @@ export const createPhotoOnDB = async (data: Photo) => {
 	})
 }
 
-export const getAllPhotosFromDB = async (skip: number, take: number) => {
+export const getAllPhotosOnDB = async (skip: number, take: number) => {
 	return await prisma.photo.findMany({
+		skip,
+		take,
+		orderBy: {
+			createdAt: 'desc',
+		},
+	})
+}
+
+export const getUserPhotosOnDB = async (
+	userId: string,
+	skip: number,
+	take: number
+) => {
+	return await prisma.photo.findMany({
+		where: {
+			userId,
+		},
 		skip,
 		take,
 		orderBy: {

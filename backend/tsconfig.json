@@ -9,6 +9,7 @@
 		"paths": {
 			"prisma/*": ["./prisma/*"],
 			"controllers/*": ["./src/controllers/*"],
+			"helpers/*": ["./src/helpers/*"],
 			"lib/*": ["./src/lib/*"],
 			"middlewares/*": ["./src/middlewares/*"],
 			"repositories/*": ["./src/repositories/*"],
