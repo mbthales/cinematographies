@@ -6,6 +6,8 @@ import { registerSchema, loginSchema } from 'validators/auth'
 import type { LoginUser, RegisterUser } from 'types/auth'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
+import { createVerifier } from 'fast-jwt'
+
 export const checkIfBodyIsValid = (
 	{ url, body }: FastifyRequest,
 	reply: FastifyReply,
@@ -90,6 +92,47 @@ export const checkUserCredentials = async (
 		}
 	} catch (err) {
 		reply.code(500).send({ error: 'Internal Server Error' })
+	}
+
+	next()
+}
+
+export const checkIfUserIsAuthenticated = (
+	req: FastifyRequest,
+	reply: FastifyReply,
+	next: () => void
+) => {
+	const token = req.cookies.token
+	const jwtSecret = process.env.JWT_SECRET as string
+	const verify = createVerifier({ key: jwtSecret })
+
+	if (!token) {
+		reply.code(401).send({
+			error: 'Unauthorized',
+		})
+
+		return
+	}
+
+	try {
+		const verifyToken = verify(token) as {
+			username: string
+		}
+		const reqParam = req.params as { username: string }
+
+		if (reqParam.username !== verifyToken.username) {
+			reply.code(401).send({
+				error: 'Unauthorized',
+			})
+
+			return
+		}
+	} catch (err) {
+		reply.code(401).send({
+			error: 'Invalid Token',
+		})
+
+		return
 	}
 
 	next()
