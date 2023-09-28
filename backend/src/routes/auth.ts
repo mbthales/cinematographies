@@ -16,7 +16,7 @@ export const registerRoute = (app: FastifyInstance) => {
 	app.post(
 		'/register',
 		{
-			preHandler: [checkIfBodyIsValid, checkIfUserExists],
+			preValidation: [checkIfBodyIsValid, checkIfUserExists],
 		},
 		async (req, reply) => {
 			await registerController(req, reply)
@@ -28,7 +28,7 @@ export const loginRoute = (app: FastifyInstance) => {
 	app.post(
 		'/login',
 		{
-			preHandler: [checkIfBodyIsValid, checkUserCredentials],
+			preValidation: [checkIfBodyIsValid, checkUserCredentials],
 		},
 		async (req, reply) => {
 			await loginController(req, reply)
@@ -40,7 +40,7 @@ export const deleteAccountRoute = (app: FastifyInstance) => {
 	app.post(
 		'/delete/:username',
 		{
-			preHandler: [checkIfUserExists],
+			preValidation: [checkIfUserExists],
 		},
 		async (req, reply) => {
 			await deleteAccountController(req, reply)
