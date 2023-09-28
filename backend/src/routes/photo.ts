@@ -5,6 +5,8 @@ import { checkIfBodyIsValid, uploadPhoto } from 'middlewares/photo'
 
 import { createPostWithPhoto } from 'controllers/photo'
 
+import { fetchAllPhotos } from 'controllers/photo'
+
 export const addPhotoRoute = (app: FastifyInstance) => {
 	app.post(
 		'/add-photo/:username',
@@ -16,4 +18,10 @@ export const addPhotoRoute = (app: FastifyInstance) => {
 			await createPostWithPhoto(req, reply)
 		}
 	)
+}
+
+export const getAllPhotos = (app: FastifyInstance) => {
+	app.get('/photos', async (req: FastifyRequest, reply: FastifyReply) => {
+		await fetchAllPhotos(req, reply)
+	})
 }

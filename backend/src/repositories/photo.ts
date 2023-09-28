@@ -1,13 +1,19 @@
 import prisma from 'prisma/index'
 
-interface Photo {
-	title: string
-	url: string
-	userId: string
-}
+import type { Photo } from 'types/photo'
 
 export const createPhotoOnDB = async (data: Photo) => {
 	return await prisma.photo.create({
 		data,
+	})
+}
+
+export const getAllPhotosFromDB = async (skip: number, take: number) => {
+	return await prisma.photo.findMany({
+		skip,
+		take,
+		orderBy: {
+			createdAt: 'desc',
+		},
 	})
 }

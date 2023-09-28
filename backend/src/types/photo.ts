@@ -15,3 +15,14 @@ export interface ReqUploadedPhoto {
 		value: string
 	}
 }
+
+export interface ReqQueryGetPhotos {
+	page: string
+	limit: string
+}
+
+export interface Photo {
+	title: string
+	url: string
+	userId: string
+}
