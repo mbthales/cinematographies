@@ -1,0 +1,36 @@
+{
+	"name": "cinematographies",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "tsx watch ./src/index.ts",
+		"test": "jest"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@fastify/cookie": "^9.0.4",
+		"@fastify/cors": "^8.4.0",
+		"@fastify/multipart": "^7.7.3",
+		"@prisma/client": "^5.3.1",
+		"bcrypt": "^5.1.1",
+		"cloudinary": "^1.40.0",
+		"dotenv": "^16.3.1",
+		"fast-jwt": "^3.2.0",
+		"fastify": "^4.23.2",
+		"zod": "^3.22.2"
+	},
+	"devDependencies": {
+		"@types/bcrypt": "^5.0.0",
+		"@types/node": "^20.6.2",
+		"@typescript-eslint/eslint-plugin": "^6.7.2",
+		"@typescript-eslint/parser": "^6.7.2",
+		"eslint": "^8.49.0",
+		"prisma": "^5.3.1",
+		"tsup": "^7.2.0",
+		"tsx": "^3.12.10",
+		"typescript": "^5.2.2"
+	}
+}
