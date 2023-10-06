@@ -21,7 +21,9 @@ export async function POST(req: NextRequest) {
 
 		if (cookie) {
 			const token = cookie.split(';')[0].split('=')[1]
-			cookieStore.set('token', token)
+			cookieStore.set('token', token, {
+				maxAge: 60 * 60 * 24 * 7 * 30, // 30 days
+			})
 		}
 
 		return Response.json(data, { status: res.status })
