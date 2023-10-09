@@ -39,10 +39,10 @@ export const loginController = async (
 	req: FastifyRequest,
 	reply: FastifyReply
 ) => {
-	const { username } = req.body as LoginUserI
+	const { username, userId } = req.body as LoginUserI
 
 	const jwtSecret = process.env.JWT_SECRET as string
-	const token = await createToken(username, jwtSecret)
+	const token = await createToken(username, userId, jwtSecret)
 
 	reply
 		.cookie('token', token, {

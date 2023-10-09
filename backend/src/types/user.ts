@@ -6,6 +6,7 @@ export interface RegisterUserI {
 
 export interface LoginUserI {
 	username: string
+	userId: string
 	password: string
 }
 

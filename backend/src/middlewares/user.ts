@@ -93,6 +93,12 @@ export const validUserCredentialsMiddleware = async (
 				error: 'Invalid Credentials',
 			})
 		}
+
+		req.body = {
+			username,
+			password,
+			userId: userExists.id,
+		}
 	} catch (err) {
 		console.log(err)
 		reply.code(500).send({ error: 'Internal Server Error' })

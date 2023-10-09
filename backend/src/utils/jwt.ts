@@ -13,7 +13,11 @@ export const verifyToken = async (token: string, jwtSecret: string) => {
 	}
 }
 
-export const createToken = async (username: string, jwtSecret: string) => {
+export const createToken = async (
+	username: string,
+	userId: string,
+	jwtSecret: string
+) => {
 	const sign = createSigner({ key: jwtSecret, expiresIn: 2592000000 }) // 30 days
-	return sign({ username })
+	return sign({ username, userId })
 }
