@@ -1,39 +1,53 @@
+import { authenticateUserMiddleware } from 'middlewares/user'
+import {
+	validatePhotoRequestBodyMiddleware,
+	uploadPhotoMiddleware,
+} from 'middlewares/photo'
+import {
+	createPhotoController,
+	getPhotosController,
+	getUserPhotosController,
+	updatePhotoLikesController,
+} from 'controllers/photo'
+
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 
-import { checkIfUserIsAuthenticated } from 'middlewares/auth'
-import { checkIfBodyIsValid, uploadPhoto } from 'middlewares/photo'
-
-import { createPostWithPhoto } from 'controllers/photo'
-
-import { fetchAllPhotos, fetchUserPhotos } from 'controllers/photo'
-
-export const addPhotoRoute = (app: FastifyInstance) => {
+export const photoRoutes = (app: FastifyInstance) => {
 	app.post(
-		'/add-photo/:username',
+		'/users/:username/photos',
 		{
-			preValidation: [checkIfUserIsAuthenticated, checkIfBodyIsValid],
-			preHandler: uploadPhoto,
+			preValidation: [
+				authenticateUserMiddleware,
+				validatePhotoRequestBodyMiddleware,
+			],
+			preHandler: uploadPhotoMiddleware,
 		},
 		async (req: FastifyRequest, reply: FastifyReply) => {
-			await createPostWithPhoto(req, reply)
+			await createPhotoController(req, reply)
 		}
 	)
-}
 
-export const getAllPhotos = (app: FastifyInstance) => {
 	app.get('/photos', async (req: FastifyRequest, reply: FastifyReply) => {
-		await fetchAllPhotos(req, reply)
+		await getPhotosController(req, reply)
 	})
-}
 
-export const getUserPhotos = (app: FastifyInstance) => {
 	app.get(
-		'/photos/:username',
+		'/users/:username/photos',
 		{
-			preValidation: [checkIfUserIsAuthenticated],
+			preValidation: [authenticateUserMiddleware],
 		},
 		async (req: FastifyRequest, reply: FastifyReply) => {
-			await fetchUserPhotos(req, reply)
+			await getUserPhotosController(req, reply)
+		}
+	)
+
+	app.patch(
+		'/users/:userId/photos/:photoId/likes',
+		{
+			preValidation: [authenticateUserMiddleware],
+		},
+		async (req: FastifyRequest, reply: FastifyReply) => {
+			await updatePhotoLikesController(req, reply)
 		}
 	)
 }

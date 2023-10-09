@@ -1,9 +1,13 @@
 import prisma from 'prisma/index'
 
-import type { RegisterUser } from 'types/auth'
+import type { RegisterUserI } from 'types/user'
 
-export const createUserOnDB = async (data: RegisterUser) => {
+export const createUserOnDB = async (data: RegisterUserI) => {
 	return await prisma.user.create({ data })
+}
+
+export const findUserByIdOnDB = async (id: string) => {
+	return await prisma.user.findUnique({ where: { id } })
 }
 
 export const findUserByUsernameOnDB = async (username: string) => {

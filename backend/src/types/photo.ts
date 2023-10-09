@@ -1,6 +1,6 @@
-import { MultipartFile } from '@fastify/multipart'
+import type { MultipartFile } from '@fastify/multipart'
 
-export interface ReqValidatedPhoto {
+export interface ValidatedPhotoRequestI {
 	image: {
 		mimetype: string
 	}
@@ -9,19 +9,19 @@ export interface ReqValidatedPhoto {
 	}
 }
 
-export interface ReqUploadedPhoto {
+export interface UploadedPhotoRequestI {
 	image: Promise<MultipartFile>
 	title: {
 		value: string
 	}
 }
 
-export interface ReqQueryGetPhotos {
+export interface PhotosQueryI {
 	page: string
 	limit: string
 }
 
-export interface Photo {
+export interface PhotoI {
 	title: string
 	url: string
 	userId: string

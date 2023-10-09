@@ -2,10 +2,10 @@ import 'dotenv/config'
 
 import { cloudinary } from 'lib/cloudinary'
 
-import type { ReqValidatedPhoto, ReqUploadedPhoto } from 'types/photo'
+import type { ValidatedPhotoRequestI, UploadedPhotoRequestI } from 'types/photo'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
-export const checkIfBodyIsValid = async (
+export const validatePhotoRequestBodyMiddleware = async (
 	req: FastifyRequest,
 	reply: FastifyReply,
 	next: () => void
@@ -16,7 +16,7 @@ export const checkIfBodyIsValid = async (
 		'image/png',
 		'image/webp',
 	]
-	const { image, title } = req.body as ReqValidatedPhoto
+	const { image, title } = req.body as ValidatedPhotoRequestI
 	const imageType = image.mimetype
 	const titleLength = title.value.length > 10 && title.value.length < 30
 
@@ -51,25 +51,30 @@ export const checkIfBodyIsValid = async (
 	next()
 }
 
-export const uploadPhoto = async (
+export const uploadPhotoMiddleware = async (
 	req: FastifyRequest,
 	reply: FastifyReply,
 	next: () => void
 ) => {
-	const { image, title } = req.body as ReqUploadedPhoto
-	const file = await image
-	const buffer = await file?.toBuffer()
+	try {
+		const { image, title } = req.body as UploadedPhotoRequestI
+		const file = await image
+		const buffer = await file?.toBuffer()
 
-	if (buffer) {
-		const blobToBase64 = buffer.toString('base64')
-		const base64 = `data:image/png;base64,${blobToBase64}`
+		if (buffer) {
+			const blobToBase64 = buffer.toString('base64')
+			const base64 = `data:image/png;base64,${blobToBase64}`
 
-		const { url } = await cloudinary.uploader.upload(base64)
+			const { url } = await cloudinary.uploader.upload(base64)
 
-		req.body = {
-			title: title.value,
-			url,
+			req.body = {
+				title: title.value,
+				url,
+			}
 		}
+	} catch (err) {
+		console.log(err)
+		reply.code(500).send({ error: 'Internal Server Error' })
 	}
 
 	next()

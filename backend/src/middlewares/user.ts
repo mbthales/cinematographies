@@ -1,14 +1,16 @@
-import bcrypt from 'bcrypt'
-
-import { findUserByUsernameOnDB } from 'repositories/user'
+import { findUserByIdOnDB, findUserByUsernameOnDB } from 'repositories/user'
 import { registerSchema, loginSchema } from 'validators/auth'
+import { verifyToken } from 'utils/jwt'
+import { comparePassword } from 'utils/bcrypt'
 
-import type { LoginUser, RegisterUser } from 'types/auth'
+import type {
+	AuthenticateUserParamsI,
+	LoginUserI,
+	RegisterUserI,
+} from 'types/user'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
-import { createVerifier } from 'fast-jwt'
-
-export const checkIfBodyIsValid = (
+export const validateAuthRequestBodyMiddleware = (
 	{ url, body }: FastifyRequest,
 	reply: FastifyReply,
 	next: () => void
@@ -28,14 +30,14 @@ export const checkIfBodyIsValid = (
 	next()
 }
 
-export const checkIfUserExists = async (
+export const validateUserExistenceMiddleware = async (
 	req: FastifyRequest,
 	reply: FastifyReply,
 	next: () => void
 ) => {
 	try {
 		const param = req.params as { username: string }
-		const body = req.body as RegisterUser
+		const body = req.body as RegisterUserI
 		const username = param.username || body.username
 		const userExists = await findUserByUsernameOnDB(username)
 
@@ -57,19 +59,20 @@ export const checkIfUserExists = async (
 			})
 		}
 	} catch (err) {
+		console.log(err)
 		reply.code(500).send({ error: 'Internal Server Error' })
 	}
 
 	next()
 }
 
-export const checkUserCredentials = async (
+export const validUserCredentialsMiddleware = async (
 	req: FastifyRequest,
 	reply: FastifyReply,
 	next: () => void
 ) => {
 	try {
-		const { username, password } = req.body as LoginUser
+		const { username, password } = req.body as LoginUserI
 		const userExists = await findUserByUsernameOnDB(username)
 
 		if (!userExists) {
@@ -80,7 +83,7 @@ export const checkUserCredentials = async (
 			return
 		}
 
-		const isPasswordValid = await bcrypt.compare(
+		const isPasswordValid = await comparePassword(
 			password,
 			userExists.password
 		)
@@ -91,20 +94,20 @@ export const checkUserCredentials = async (
 			})
 		}
 	} catch (err) {
+		console.log(err)
 		reply.code(500).send({ error: 'Internal Server Error' })
 	}
 
 	next()
 }
 
-export const checkIfUserIsAuthenticated = (
+export const authenticateUserMiddleware = async (
 	req: FastifyRequest,
 	reply: FastifyReply,
 	next: () => void
 ) => {
 	const token = req.cookies.token
 	const jwtSecret = process.env.JWT_SECRET as string
-	const verify = createVerifier({ key: jwtSecret })
 
 	if (!token) {
 		reply.code(401).send({
@@ -115,25 +118,36 @@ export const checkIfUserIsAuthenticated = (
 	}
 
 	try {
-		const verifyToken = verify(token) as {
-			username: string
-		}
-		const reqParam = req.params as { username: string }
+		const validToken = await verifyToken(token, jwtSecret)
+		const { userId, username } = req.params as AuthenticateUserParamsI
 
-		if (reqParam.username !== verifyToken.username) {
+		if (userId) {
+			const user = await findUserByIdOnDB(userId)
+
+			if (!user) {
+				reply.code(401).send({
+					error: 'Unauthorized',
+				})
+
+				return
+			}
+
+			if (user.username !== validToken.username) {
+				reply.code(401).send({
+					error: 'Unauthorized',
+				})
+			}
+
+			next()
+		} else if (username !== validToken.username) {
 			reply.code(401).send({
 				error: 'Unauthorized',
 			})
-
-			return
 		}
 	} catch (err) {
+		console.log(err)
 		reply.code(401).send({
 			error: 'Invalid Token',
 		})
-
-		return
 	}
-
-	next()
 }

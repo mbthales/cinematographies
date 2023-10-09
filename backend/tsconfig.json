@@ -9,12 +9,12 @@
 		"paths": {
 			"prisma/*": ["./prisma/*"],
 			"controllers/*": ["./src/controllers/*"],
-			"helpers/*": ["./src/helpers/*"],
 			"lib/*": ["./src/lib/*"],
 			"middlewares/*": ["./src/middlewares/*"],
 			"repositories/*": ["./src/repositories/*"],
 			"routes/*": ["./src/routes/*"],
 			"types/*": ["./src/types/*"],
+			"utils/*": ["./src/utils/*"],
 			"validators/*": ["./src/validators/*"]
 		}
 	}

@@ -4,8 +4,8 @@ import multipart from '@fastify/multipart'
 import cors from '@fastify/cors'
 import 'dotenv/config'
 
-import { registerRoute, loginRoute, deleteAccountRoute } from 'routes/auth'
-import { addPhotoRoute, getAllPhotos, getUserPhotos } from 'routes/photo'
+import { userRoutes } from 'routes/user'
+import { photoRoutes } from 'routes/photo'
 
 const app = Fastify()
 
@@ -16,12 +16,8 @@ app.register(cors, {
 app.register(cookie)
 app.register(multipart, { attachFieldsToBody: true })
 
-registerRoute(app)
-loginRoute(app)
-deleteAccountRoute(app)
-addPhotoRoute(app)
-getAllPhotos(app)
-getUserPhotos(app)
+userRoutes(app)
+photoRoutes(app)
 
 app.listen({ port: 3000 }, (err, address) => {
 	if (err) {

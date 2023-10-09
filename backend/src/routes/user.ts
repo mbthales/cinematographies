@@ -1,46 +1,47 @@
 import {
-	checkIfBodyIsValid,
-	checkIfUserExists,
-	checkUserCredentials,
-} from 'middlewares/auth'
-
+	validateAuthRequestBodyMiddleware,
+	validateUserExistenceMiddleware,
+	validUserCredentialsMiddleware,
+} from 'middlewares/user'
 import {
 	registerController,
 	loginController,
 	deleteAccountController,
-} from 'controllers/auth'
+} from 'controllers/user'
 
 import type { FastifyInstance } from 'fastify'
 
-export const registerRoute = (app: FastifyInstance) => {
+export const userRoutes = (app: FastifyInstance) => {
 	app.post(
 		'/register',
 		{
-			preValidation: [checkIfBodyIsValid, checkIfUserExists],
+			preValidation: [
+				validateAuthRequestBodyMiddleware,
+				validateUserExistenceMiddleware,
+			],
 		},
 		async (req, reply) => {
 			await registerController(req, reply)
 		}
 	)
-}
 
-export const loginRoute = (app: FastifyInstance) => {
 	app.post(
 		'/login',
 		{
-			preValidation: [checkIfBodyIsValid, checkUserCredentials],
+			preValidation: [
+				validateAuthRequestBodyMiddleware,
+				validUserCredentialsMiddleware,
+			],
 		},
 		async (req, reply) => {
 			await loginController(req, reply)
 		}
 	)
-}
 
-export const deleteAccountRoute = (app: FastifyInstance) => {
 	app.post(
 		'/delete/:username',
 		{
-			preValidation: [checkIfUserExists],
+			preValidation: [validateUserExistenceMiddleware],
 		},
 		async (req, reply) => {
 			await deleteAccountController(req, reply)

@@ -17,11 +17,13 @@ model User {
    updatedAt DateTime @updatedAt
 
    photos Photo[]
+   Like   Like[]
 }
 
 model Photo {
    id    String @id @default(cuid())
    title String
+   likes Int    @default(0)
    url   String @unique
 
    createdAt DateTime @default(now())
@@ -29,4 +31,17 @@ model Photo {
 
    user   User   @relation(fields: [userId], references: [id])
    userId String
+   Like   Like[]
+}
+
+model Like {
+   id String @id @default(cuid())
+
+   photo   Photo  @relation(fields: [photoId], references: [id])
+   photoId String
+   user    User   @relation(fields: [userId], references: [id])
+   userId  String
+
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
 }
